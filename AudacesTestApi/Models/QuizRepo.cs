@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace AudacesTestApi.Models {
-	public class QuizRepo {
+	public class QuizRepository {
 
-		public QuizRepo( MyDbContext dbCtx ) {
+		public QuizRepository( MyDbContext dbCtx ) {
 			this.dbCtx = dbCtx;
 			dbCtx.Database.EnsureCreated();
 		}
@@ -16,7 +16,7 @@ namespace AudacesTestApi.Models {
 		private readonly MyDbContext dbCtx;
 
 
-		public async Task<List<Quiz>> GetAll() {
+		public async Task<List<Quiz>> GetQuizzes() {
 			return await dbCtx.Quiz
 				.Include(x => x.Id)
 				.Include(x => x.Sequence)
@@ -26,12 +26,12 @@ namespace AudacesTestApi.Models {
 		}
 
 
-		public Quiz GetById( int id ) {
+		public Quiz GetQuizById( int id ) {
 			return dbCtx.Quiz.SingleOrDefault(x => x.Id == id);
 		}
 
 
-		public async Task<Quiz> CreateAuthor( Quiz quiz ) {
+		public async Task<Quiz> CreateQuiz( Quiz quiz ) {
 			await dbCtx.Quiz.AddAsync(quiz);
 			await dbCtx.SaveChangesAsync();
 			return quiz;

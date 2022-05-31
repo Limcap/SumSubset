@@ -5,20 +5,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="GraphQL\QuizSchema.cs" />
+    <Compile Remove="GraphQL\QuizType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="Properties\serviceDependencies.local.json.user" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL" Version="5.3.0" />
-    <PackageReference Include="GraphQL.MicrosoftDI" Version="5.3.0" />
-    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="5.2.1" />
-    <PackageReference Include="GraphQL.Server.Ui.Altair" Version="5.2.1" />
-    <PackageReference Include="GraphQL.Server.Ui.Playground" Version="5.2.1" />
-    <PackageReference Include="GraphQL.SystemTextJson" Version="5.3.0" />
     <PackageReference Include="HotChocolate.AspNetCore" Version="12.9.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.25" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.25" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.25">
+    <PackageReference Include="HotChocolate.Data.EntityFramework" Version="12.9.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.17" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.17" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.17">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

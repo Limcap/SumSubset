@@ -1,10 +1,10 @@
 using AudacesTestApi.DataComm;
 using AudacesTestApi.GraphQL;
-using GraphQL;
-using GraphQL.MicrosoftDI;
-using GraphQL.Server;
-using GraphQL.SystemTextJson;
-using GraphQL.Types;
+//using GraphQL;
+//using GraphQL.MicrosoftDI;
+//using GraphQL.Server;
+//using GraphQL.SystemTextJson;
+//using GraphQL.Types;
 using HotChocolate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -80,13 +80,13 @@ namespace AudacesTestApi {
 			app.UseEndpoints(endpoints => {
 				endpoints.MapControllers();
 				endpoints.MapGraphQL();
-				//endpoints.MapGet("/", async context => {
-				//	await context.Response.WriteAsync("Hello World!");
-				//	var db = context.RequestServices.GetService(typeof(MyDbContext)) as MyDbContext;
+				endpoints.MapGet("/", async context => {
+					await context.Response.WriteAsync("Hello World!");
+					var db = context.RequestServices.GetService(typeof(MyDbContext)) as MyDbContext;
 
-				//});
+				});
 			});
-			app.UseGraphQLAltair("/altair");
+			//app.UseGraphQLAltair("/altair");
 		}
 
 
