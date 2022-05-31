@@ -1,4 +1,11 @@
 using AudacesTestApi.DataComm;
+using AudacesTestApi.GraphQL;
+using GraphQL;
+using GraphQL.MicrosoftDI;
+using GraphQL.Server;
+using GraphQL.SystemTextJson;
+using GraphQL.Types;
+using HotChocolate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +41,31 @@ namespace AudacesTestApi {
 		public void ConfigureServices( IServiceCollection services ) {
 			services.AddControllers();
 			services.AddDbContext<MyDbContext>(options => options.UseSqlite(ConnectionString));
-			services.AddMvc();
+			//services.AddMvc();
+
+
+			//services.AddScoped<IServiceProvider>(x => new FuncDependencyResolver(x.GetRequiredService));
+			//services.AddSingleton(s => new (( type ) => (IGraphType)s.GetRequiredService(type)));
+
+			//services.AddScoped<GraphQL.QuizSchema>();
+			//services.AddScoped<GraphQL.Query>();
+
+			services.AddGraphQLServer().AddQueryType<Query>();
+			/*
+			services.AddGraphQL(opt => {
+				// Load GraphQL Server configurations
+				var graphQLOptions = Configuration .GetSection("GraphQL").Get<GraphQLOptions>();
+				opt.ComplexityConfiguration = graphQLOptions.ComplexityConfiguration;
+				opt.EnableMetrics = graphQLOptions.EnableMetrics;
+				//opt.ExposeExceptions = true;
+				// Log errors
+				//var logger = provider.GetRequiredService<ILogger<Startup>>();
+				//options.UnhandledExceptionDelegate = ctx =>
+				//	 logger.LogError("{Error} occurred", ctx.OriginalException.Message);
+			});
+			services.AddGraphTypes(ServiceLifetime.Scoped);
+			services.AddDataLoader();
+			*/
 		}
 
 
@@ -48,8 +79,14 @@ namespace AudacesTestApi {
 			app.Use(OutputRequestedEndpointToConsole);
 			app.UseEndpoints(endpoints => {
 				endpoints.MapControllers();
-				endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello World!"); });
+				endpoints.MapGraphQL();
+				//endpoints.MapGet("/", async context => {
+				//	await context.Response.WriteAsync("Hello World!");
+				//	var db = context.RequestServices.GetService(typeof(MyDbContext)) as MyDbContext;
+
+				//});
 			});
+			app.UseGraphQLAltair("/altair");
 		}
 
 

@@ -8,7 +8,7 @@ namespace AudacesTestApi.DataComm {
 		public MyDbContext( DbContextOptions<MyDbContext> options ) : base(options) {
 		}
 
-		public DbSet<SumProblem> SumProblems { get; set; }
+		public DbSet<Quiz> Quiz { get; set; }
 
 		//protected override void OnConfiguring( DbContextOptionsBuilder optionsBuilder ) {
 		//	optionsBuilder.UseSqlite("Filename=AudacesTestApi.db", options => {
@@ -18,7 +18,7 @@ namespace AudacesTestApi.DataComm {
 		//}
 
 		protected override void OnModelCreating( ModelBuilder builder ) {
-			builder.Entity<SumProblem>().HasKey(m => m.Id);
+			builder.Entity<Quiz>().HasKey(m => m.Id);
 			base.OnModelCreating(builder);
 		}
 	}
