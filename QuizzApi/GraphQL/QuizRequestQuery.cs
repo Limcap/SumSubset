@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace QuizApi.GraphQL {
 
 	/// <summary>
-	/// Classe que expõe as queries possíveis da API do GraphQL
+	/// Classe que fornece os métodos de queries possíveis para a API do GraphQL
 	/// </summary>
 	/// <remarks>
 	/// Notas de implementação:<br/>
@@ -39,6 +39,7 @@ namespace QuizApi.GraphQL {
 		//}
 
 
+		[GraphQLDescription("Obtem uma requisição anterior correspondente ao 'id' informado")]
 		public async Task<QuizRequest> GetPreviousRequest( int id ) {
 			var result = await _quizDAO.GetByIdAsync( id );
 			return result;
@@ -54,7 +55,7 @@ namespace QuizApi.GraphQL {
 
 
 
-		[GraphQLDescription("Obtém a solução para um quiz cuja sequencia e alvo são informados")]
+		[GraphQLDescription("Obtém a solução para um quiz cuja sequência e alvo são informados")]
 		public async Task<QuizResponse> SolveQuiz( int[] sequence, int target ) {
 			var result = await _quizDAO.CreateAsync(new QuizRequest() { Date=DateTime.Now, SequenceArray=sequence, Target=target });
 			return new QuizResponse(result.SolutionArray);

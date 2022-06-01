@@ -8,6 +8,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace QuizApi.DAL.Entities {
+
+	/// <summary>
+	/// Representa o modelo de dados para a entidade <see cref="QuizRequest"/> do banco de dados.
+	/// </summary>
+	/// <remarks>
+	/// Utiliza 'Annotations'/'Decorations' para especificar metadados para utilização em 
+	/// classes de controllers e classes de query de GraphQL<br/>
+	/// <seealso cref="Microsoft.AspNetCore.Mvc.Controller"/><br/>
+	/// <seealso cref="HotChocolate"/>
+	/// </remarks>
 	public class QuizRequest {
 		
 		[Key]

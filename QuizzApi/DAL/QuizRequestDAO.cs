@@ -7,6 +7,17 @@ using System.Threading.Tasks;
 
 namespace QuizApi.DAL {
 
+	/// <summary>
+	/// Classe que faz o acesso à base de dados.
+	/// </summary>
+	/// <remarks>
+	/// Utiliza o EntityFramework.<br/>
+	/// Notas de implementação:
+	/// O acesso ao contexto de base de dados é feito através da injeção de um <see cref="IDbContextFactory{TContext}"/> ao invés
+	/// de da injeção direta de um <see cref="DbContext"/>. Isso permite que cada método crie seu próprio contexto ao acessar este
+	/// objeto permitindo que vários acessos simultâneos sejam feitos sem problemas, uma vez que o <see cref="DbContext"/> em si 
+	/// é single threaded.
+	/// </remarks>
 	public class QuizRequestDAO {
 
 		//public QuizRepository( MyDbContext dbCtx ) {
@@ -26,9 +37,9 @@ namespace QuizApi.DAL {
 		//private MyDbContext dbCtx => _dbCtx ?? (_dbCtx = _dbCtxFac.CreateDbContext());
 
 
-		public Task<List<QuizRequest>> GetAllAsync() {
+		public List<QuizRequest> GetAll() {
 			using var dbCtx = CreateDbContext();
-			return dbCtx.QuizRequests.ToListAsync();
+			return dbCtx.QuizRequests.ToList();
 			//.Include(x => x.Id)
 			//.Include(x => x.Sequence)
 			//.Include(x => x.Target)
@@ -37,9 +48,9 @@ namespace QuizApi.DAL {
 		}
 
 
-		public List<QuizRequest> GetAll() {
+		public Task<List<QuizRequest>> GetAllAsync() {
 			using var dbCtx = CreateDbContext();
-			return dbCtx.QuizRequests.ToList();
+			return dbCtx.QuizRequests.ToListAsync();
 			//.Include(x => x.Id)
 			//.Include(x => x.Sequence)
 			//.Include(x => x.Target)
@@ -60,14 +71,6 @@ namespace QuizApi.DAL {
 		}
 
 
-		public async Task<QuizRequest> CreateAsync( QuizRequest quiz ) {
-			using var dbCtx = CreateDbContext();
-			await dbCtx.QuizRequests.AddAsync(quiz);
-			await dbCtx.SaveChangesAsync();
-			return quiz;
-		}
-
-
 		public async Task<List<QuizRequest>> GetByDateAsync( DateTime? initialDate, DateTime? finalDate) {
 			using var dbCtx = CreateDbContext();
 			//if (date1 == null && date2 == null) throw new ArgumentException("É necessário definir as datas");
@@ -76,6 +79,14 @@ namespace QuizApi.DAL {
 			if (finalDate == null) return await dbCtx.QuizRequests.Where(q => q.Date>=initialDate).ToListAsync();
 			if (initialDate > finalDate) (initialDate, finalDate) = (finalDate, initialDate);
 			return await dbCtx.QuizRequests.Where(q => q.Date>=initialDate && q.Date <= finalDate).ToListAsync();
+		}
+
+
+		public async Task<QuizRequest> CreateAsync( QuizRequest quiz ) {
+			using var dbCtx = CreateDbContext();
+			await dbCtx.QuizRequests.AddAsync(quiz);
+			await dbCtx.SaveChangesAsync();
+			return quiz;
 		}
 	}
 }

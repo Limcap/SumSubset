@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using QuizApi.GraphQL;
+using System.IO;
 
 namespace QuizApi {
 	public class Startup {
@@ -38,7 +39,22 @@ namespace QuizApi {
 
 
 
-		// This method gets called by the runtime. Use this method to add services to the container.
+		/// <summary>
+		/// Configura os serviços disponíveis e injeção deles como dependências nas controllers.
+		/// </summary>
+		/// <remarks>
+		/// Nota de implementação:<br/>
+		/// O Controlador de dependência do <see cref="MyDbContext"/> é do tipo Pool, o que permite que instâncias 
+		/// desse objeto sejam criadas à medida que for necessário mas fazendo a reutilização das mesmas para que
+		/// caso muitas requests sejam feitas simultaneamente, as intâncias sejam reutilizadas, evitando a criação
+		/// e destruição de novas instâncias a cada request, o que aumenta a performance da aplicação em tempo e
+		/// recursos. Para este projeto em específico isso não é necessário porém decidi fazer dessa forma pois
+		/// não irá prejudicar e é a forma ideal de se fazer pensando na escalabilidade de um projeto. Principalmente
+		/// considerando que objetos do tipo <see cref="DbContext"/> são single-threaded, o que significa que não
+		/// podem ser usado ao mesmo tempo por threads diferentes, ou seja, a criação de uma nova instaância para 
+		/// acesso simultâneo é obrigatória.
+		/// </remarks>
+		/// <param name="services"></param>
 		public void ConfigureServices( IServiceCollection services ) {
 			//services.AddDbContext<MyDbContext>(options => options.UseSqlite(ConnectionString));
 			//services.AddDbContextPool<MyDbContext>(options => options.UseSqlite(ConnectionString));
@@ -84,15 +100,13 @@ namespace QuizApi {
 			if (env.IsDevelopment()) { app.UseDeveloperExceptionPage(); }
 			app.UseRouting();
 			app.UseAuthorization();
-			//app.Use(OutputRequestedEndpointToConsole);
+			app.Use(OutputRequestedEndpointToConsole);
 			app.UseEndpoints(endpoints => {
 				endpoints.MapControllers();
 				endpoints.MapGraphQL("/graphql");
-				endpoints.MapGet("/help", async context => {
-					await context.Response.WriteAsync("Hello World!");
-					var db = context.RequestServices.GetService(typeof(MyDbContext)) as MyDbContext;
-
-				});
+				endpoints.MapGet("/help", HelpInfo);
+				endpoints.MapGet("/", HelpInfo);
+				//endpoints.MapGet("/", HelpInfo);
 			});
 			//app.UseGraphQLAltair("/altair");
 		}
@@ -100,24 +114,31 @@ namespace QuizApi {
 
 
 
+		/// <summary>
+		/// Middleware customizado para ficar no início do pipeline para que informações sobre a request
+		/// sejam mostradas no console.
+		/// </summary>
 		private Func<RequestDelegate,RequestDelegate> OutputRequestedEndpointToConsole = next => context => {
 			var endpoint = context.GetEndpoint();
-			if (endpoint is null) {
-				return Task.CompletedTask;
-			}
-			Console.WriteLine($"Endpoint: {endpoint.DisplayName}");
-			if (endpoint is RouteEndpoint routeEndpoint) {
-				Console.WriteLine("Endpoint has route pattern: " +
-					 routeEndpoint.RoutePattern.RawText);
-			}
-			foreach (var metadata in endpoint.Metadata) {
-				Console.WriteLine($"Endpoint has metadata: {metadata}");
-			}
-			next(context);
-			return Task.CompletedTask;
+			if (endpoint is null) return Task.CompletedTask;
+			Console.WriteLine($"{context.Request.Method} {context.Request.Path}{context.Request.QueryString}");
+			if (endpoint is RouteEndpoint routeEndpoint) Console.WriteLine($"  Rota: {routeEndpoint.RoutePattern.RawText}");
+			Console.WriteLine($"  Endpoint:  {endpoint.DisplayName}");
+			//foreach (var metadata in endpoint.Metadata) Console.WriteLine($"   Metadata: {metadata}");
+			return next(context);
 		};
-	}
-	public class Query1 {
-		public string Hello() { return "How are you?"; }
+
+
+
+
+		/// <summary>
+		/// Middleware que responde à requisição com um texto informativo sobre a utilização da API.
+		/// O indicado é colocar nas rotas "/" e "/help"
+		/// </summary>
+		private RequestDelegate HelpInfo = async context => {
+			var helpText = File.ReadAllText("ApiInfo.md");
+			await context.Response.WriteAsync(helpText);
+			//var db = context.RequestServices.GetService(typeof(MyDbContext)) as MyDbContext;
+		};
 	}
 }

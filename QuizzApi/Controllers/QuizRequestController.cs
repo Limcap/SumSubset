@@ -6,10 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using QuizApi.DAL;
 using QuizApi.DAL.Entities;
+using QuizApi.Util;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 
 namespace QuizApi.Controllers {
@@ -17,8 +21,10 @@ namespace QuizApi.Controllers {
 	//[Route("rest/[controller]")]
 	[Route("rest")]
 	[ApiController]
-	public class QuizRequestController : Controller {
+	public partial class QuizRequestController : Controller {
 
+		public static JsonSerializerOptions JsonEncoding = new JsonSerializerOptions { Encoder = JavaScriptEncoder.Create(UnicodeRanges.LatinExtendedAdditional), WriteIndented = true };
+		public static string Latin( string txt ) => JsonSerializer.Serialize(txt, JsonEncoding);
 		//public QuizController( IServiceScopeFactory scopeFac, IServiceProvider provider, IDbContextFactory<MyDbContext> dbctxFac ) {
 		//	//_dbctx = context;
 		//	using (var scope = scopeFac.CreateScope()) {
@@ -68,9 +74,9 @@ namespace QuizApi.Controllers {
 
 
 
-		[HttpGet("quiz/{id}")] // GET: rest/quiz/5
-		[HttpGet("quiz")] // GET: rest/quiz?id=5
-		public async Task<IActionResult> Details( int? id ) {
+		[HttpGet("previousRequest/{id}")] // GET: rest/quiz/5
+		[HttpGet("previousRequests")] // GET: rest/quiz?id=5
+		public async Task<IActionResult> PreviousRequest( int? id ) {
 			if (id == null) return Json(await _quizDAO.GetAllAsync());
 			var sumProblem = await _quizDAO.GetByIdAsync( id.Value );
 			if (sumProblem == null) return Json(new { });
@@ -87,6 +93,35 @@ namespace QuizApi.Controllers {
 
 
 
+		[HttpGet("previousRequests")] // GET: rest/quiz?id=5
+		public async Task<IActionResult> PreviousRequest( DateTime? initialDate = null, DateTime? finalDate = null ) {
+			var result = await _quizDAO.GetByDateAsync(initialDate,finalDate);
+			return Json(result);
+		}
+
+
+		[HttpGet("solveQuiz/{sequence}")] // GET: rest/quiz?id=5
+		[HttpGet("solveQuiz")] // GET: rest/quiz?id=5
+		public async Task<IActionResult> SolveQuizz( string sequence, int target ) {
+			var arr = sequence.TryAsIntArray();
+			RestResponse response;
+			//string ToUTF8( string txt ) => Encoding.UTF8.GetString(Encoding.Default.GetBytes(txt));
+			if (arr == null) response = new RestResponse($"A sequencia de numeros informada e invalida: [{sequence}]", null);
+			else response = new RestResponse(null, "Nao implementado");
+			//var result = Json(response,new JsonSerializerOptions(){WriteIndented=true,Encoder=JavaScriptEncoder.Create(UnicodeRanges.LatinExtendedAdditional)});
+			//result.ContentType = "application/json;charset=unicode";
+			var quiz = new QuizRequest() { Date = DateTime.Now, SequenceArray=arr, Target=target, SolutionArray=Subset.GetSubsetOfSum(arr, target) };
+			var r = _quizDAO.CreateAsync( quiz );
+			return Json(response);
+		}
+		public struct RestResponse {
+			public RestResponse( string error, string data ) { this.error = error; this.data = data; }
+			public string error { get; set; }
+			public string data { get; set; }
+		}
+
+
+
 
 		// GET: SumProblems/Create
 		//public async Task<IActionResult> Create( Quiz quiz ) {
@@ -98,7 +133,7 @@ namespace QuizApi.Controllers {
 		[HttpGet("create")] // POST: rest/create
 		public async Task<IActionResult> Create( string sequence, int target ) {
 			int[] seq = toint(sequence);
-			var a = GFG.isSubsetSum2(seq, seq.Length, target);
+			//var a = SubsetLogic.isSubsetSum2(seq, seq.Length, target);
 			if (ModelState.IsValid) {
 				var quiz = new QuizRequest(){SequenceArray=seq, Target=target, Date=DateTime.Now, SolutionArray=new int[0]};
 				var result = await _quizDAO.CreateAsync(quiz);
@@ -110,6 +145,11 @@ namespace QuizApi.Controllers {
 		private int[] toint( string sequence ) {
 			return sequence.Split(',').Select(n => int.Parse(n)).ToArray();
 		}
+
+
+
+
+
 		//bool checkSum( int[] arr, int i, int n, int target ) {
 		//	if (target==0)
 		//		return true;
@@ -122,7 +162,10 @@ namespace QuizApi.Controllers {
 
 		//			  checkSum(arr, i+1, n, target-arr[i]))); // include current value and move to next
 		//}
-		class GFG {
+
+
+
+		class SubsetLogic {
 			// Returns true if there is a subset of set[] with sum
 			// equal to given sum
 			public static bool isSubsetSum( int[] set, int n, int sum ) {
