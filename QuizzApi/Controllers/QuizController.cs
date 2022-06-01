@@ -10,6 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using HotChocolate.Data;
+using QuizzApi.DAL;
+using System.Net.Http;
 
 namespace QuizApi.Controllers {
 	
@@ -29,82 +31,116 @@ namespace QuizApi.Controllers {
 		//		db1.Dispose();
 		//	}
 		//}
-		public QuizController( IDbContextFactory<MyDbContext> dbctxFac ) {
-			_dbctxFac = dbctxFac;
+
+
+		//public QuizController( IDbContextFactory<MyDbContext> dbctxFac ) {
+		//	_dbctxFac = dbctxFac;
+		//	_dbctxFac.CreateDbContext().Database.EnsureCreated();
+		//}
+
+
+		public QuizController( IQuizDAO quizDAO ) {
+			_quizDAO = quizDAO;
 		}
 
 
 
-
-		private readonly IDbContextFactory<MyDbContext> _dbctxFac;
-		private MyDbContext _dbctx => _dbctxFac.CreateDbContext();
-
-
+		//private readonly IDbContextFactory<MyDbContext> _dbctxFac;
+		//private MyDbContext _dbctx => _dbctxFac.CreateDbContext();
+		private readonly IQuizDAO _quizDAO;
 
 
-		// GET: SumProblems
-		[HttpGet]
+
+
+		[HttpGet] // GET: rest
 		public async Task<IActionResult> Index() {
-			var result = await _dbctxFac.CreateDbContext().Quiz.ToListAsync();
-			//return View(result);
-			var json = Json(result);
+			var result = await _quizDAO.GetQuizzesAsync();
 			return Json(result);
+			//return View(result);
 		}
+		//public async Task<IActionResult> Index() {
+		//	using var db = _dbctxFac.CreateDbContext();
+		//	var result = await db.Quiz.ToListAsync();
+		//	//return View(result);
+		//	var json = Json(result);
+		//	return Json(result);
+		//}
 
 
 
-		
+
 		[HttpGet("quiz/{id}")] // GET: rest/quiz/5
 		[HttpGet("quiz")] // GET: rest/quiz?id=5
 		public async Task<IActionResult> Details( int? id ) {
-			using var db = _dbctxFac.CreateDbContext();
-			//if (id == null) return NotFound();
-			if (id == null) return Json(await db.Quiz.ToListAsync());
-			var sumProblem = await db.Quiz.FirstOrDefaultAsync(m => m.Id == id);
-			if (sumProblem == null) return Json(new{});
+			if (id == null) return Json(await _quizDAO.GetQuizzesAsync());
+			var sumProblem = await _quizDAO.GetQuizByIdAsync( id.Value );
+			if (sumProblem == null) return Json(new { });
 			return Json(sumProblem);
 		}
+		//public async Task<IActionResult> Details( int? id ) {
+		//	using var db = _dbctxFac.CreateDbContext();
+		//	//if (id == null) return NotFound();
+		//	if (id == null) return Json(await db.Quiz.ToListAsync());
+		//	var sumProblem = await db.Quiz.FirstOrDefaultAsync(m => m.Id == id);
+		//	if (sumProblem == null) return Json(new{});
+		//	return Json(sumProblem);
+		//}
 
 
 
 
 		// GET: SumProblems/Create
-		public IActionResult Create() {
-			using var db = _dbctxFac.CreateDbContext();
-			return View();
+		//public async Task<IActionResult> Create( Quiz quiz ) {
+		//	var result = await _quizDAO.CreateQuizAsync(quiz);
+		//	return Json(result);
+		//	//using var db = _dbctxFac.CreateDbContext();
+		//	//return View();
+		//}
+		public class QuizzRequest { string sequence; string target; }
+		[HttpPost("create")] // POST: rest/create
+		//public async Task<IActionResult> Create([Bind("sequence,target")] QuizzRequest d ) { 
+		public async Task<IActionResult> Create(int sequence, int target) {
+			var key = HttpContext.Request.Form.Keys;
+			if (ModelState.IsValid) {
+				var result = false;
+				//var result = await _quizDAO.CreateQuizAsync(quiz);
+				return Json(result);
+			}
+			return Json(new { Error = "Model is not valid" });
 		}
 
 
-
-
-		// POST: SumProblems/Create
 		// To protect from overposting attacks, enable the specific properties you want to bind to, for 
 		// more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create( [Bind("Id,Date,Sequence,Target,Solution")] Quiz sumProblem ) {
+		[HttpPost("create2")] // POST: rest/create
+		//[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Create2( [Bind("Id,Date,Sequence,Target,Solution")] Quiz quiz ) {
 			if (ModelState.IsValid) {
-				_dbctx.Add(sumProblem);
-				await _dbctx.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
+				var result = await _quizDAO.CreateQuizAsync(quiz);
+				return Json(result);
 			}
-			return View(sumProblem);
+			return Json(new { Error = "Model is not valid" });
 		}
+		//public async Task<IActionResult> Create( [Bind("Id,Date,Sequence,Target,Solution")] Quiz quiz ) {
+		//	if (ModelState.IsValid) {
+		//		_dbctx.Add(quiz);
+		//		await _dbctx.SaveChangesAsync();
+		//		return RedirectToAction(nameof(Index));
+		//	}
+		//	return View(quiz);
+		//}
 
 
 
-
+		/*
 		// GET: SumProblems/Edit/5
 		public async Task<IActionResult> Edit( int? id ) {
-			if (id == null) {
+			if (id == null) { return Json(NotFound()); }
+			var quiz = await _dbctx.Quiz.FindAsync(id);
+			if (quiz == null) {
 				return NotFound();
 			}
-
-			var sumProblem = await _dbctx.Quiz.FindAsync(id);
-			if (sumProblem == null) {
-				return NotFound();
-			}
-			return View(sumProblem);
+			return View(quiz);
 		}
 
 
@@ -166,5 +202,6 @@ namespace QuizApi.Controllers {
 		private bool SumProblemExists( int id ) {
 			return _dbctx.Quiz.Any(e => e.Id == id);
 		}
+		*/
 	}
 }

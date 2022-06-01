@@ -43,9 +43,9 @@ namespace QuizApi {
 			//services.AddDbContextPool<MyDbContext>(options => options.UseSqlite(ConnectionString));
 			services.AddPooledDbContextFactory<MyDbContext>(opt => opt.UseSqlite(ConnectionString));
 			
-			services.AddControllers();
+			services.AddSingleton<IQuizDAO, QuizDAO>();
 			
-			//services.AddSingleton<MyDbContext>();
+			services.AddControllers();
 			
 			services.AddGraphQLServer().AddQueryType<QuizQuery>();
 			
@@ -86,7 +86,7 @@ namespace QuizApi {
 			//app.Use(OutputRequestedEndpointToConsole);
 			app.UseEndpoints(endpoints => {
 				endpoints.MapControllers();
-				endpoints.MapGraphQL("/gql");
+				endpoints.MapGraphQL("/graphql");
 				endpoints.MapGet("/help", async context => {
 					await context.Response.WriteAsync("Hello World!");
 					var db = context.RequestServices.GetService(typeof(MyDbContext)) as MyDbContext;

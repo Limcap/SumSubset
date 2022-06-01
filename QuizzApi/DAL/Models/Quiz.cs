@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HotChocolate;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,31 +13,30 @@ namespace QuizApi.DAL.Models {
 		public int Id { get; set; }
 		
 		[Required]
-		[Description("Data da requisição")]
+		[GraphQLDescription("Data da requisição")]
 		public DateTime Date { get; set; }
 
-		[Required]
-		[Description("Sequencia enviada")]
+		[Required][GraphQLIgnore][JsonIgnore]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public string Sequence { get; set; }
 
 		[Required]
-		[Description("Target procurado")]
+		[GraphQLDescription("Número-alvo para o qual a soma deve ser encontrada")]
 		public int Target { get; set; }
 
-		[Required]
+		[Required][GraphQLIgnore][JsonIgnore]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public string Solution { get; set; }
 
 		[NotMapped]
-		[JsonIgnore]
+		[GraphQLDescription("Sequencia inicial a partir da qual deve-se encontrar a solução")]
 		public int[] SequenceArray {
 			get => Sequence.Trim('[').TrimEnd(']').Split(',').Select(str=>int.Parse(str)).ToArray();
 			set => Sequence = '[' + string.Join(',',value) + ']';
 		}
 
 		[NotMapped]
-		[JsonIgnore]
+		[GraphQLDescription("Conjunto solução cuja soma é igual ao número-alvo")]
 		public int[] SolutionArray {
 			get => Solution.Trim('[').TrimEnd(']').Split(',').Select(str => int.Parse(str)).ToArray();
 			set => Solution = '[' + string.Join(',', value) + ']';
