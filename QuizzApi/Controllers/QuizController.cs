@@ -96,11 +96,10 @@ namespace QuizApi.Controllers {
 		//	//using var db = _dbctxFac.CreateDbContext();
 		//	//return View();
 		//}
-		public class QuizzRequest { string sequence; string target; }
-		[HttpPost("create")] // POST: rest/create
-		//public async Task<IActionResult> Create([Bind("sequence,target")] QuizzRequest d ) { 
-		public async Task<IActionResult> Create(int sequence, int target) {
-			var key = HttpContext.Request.Form.Keys;
+		[HttpGet("create")] // POST: rest/create
+		public async Task<IActionResult> Create( string sequence, int target ) {
+			int[] seq = toint(sequence);
+			var a = GFG.isSubsetSum2(seq, seq.Length, target);
 			if (ModelState.IsValid) {
 				var result = false;
 				//var result = await _quizDAO.CreateQuizAsync(quiz);
@@ -109,99 +108,68 @@ namespace QuizApi.Controllers {
 			return Json(new { Error = "Model is not valid" });
 		}
 
-
-		// To protect from overposting attacks, enable the specific properties you want to bind to, for 
-		// more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost("create2")] // POST: rest/create
-		//[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create2( [Bind("Id,Date,Sequence,Target,Solution")] Quiz quiz ) {
-			if (ModelState.IsValid) {
-				var result = await _quizDAO.CreateQuizAsync(quiz);
-				return Json(result);
-			}
-			return Json(new { Error = "Model is not valid" });
+		private int[] toint(string sequence) {
+			return sequence.Split(',').Select(n => int.Parse(n)).ToArray();
 		}
-		//public async Task<IActionResult> Create( [Bind("Id,Date,Sequence,Target,Solution")] Quiz quiz ) {
-		//	if (ModelState.IsValid) {
-		//		_dbctx.Add(quiz);
-		//		await _dbctx.SaveChangesAsync();
-		//		return RedirectToAction(nameof(Index));
-		//	}
-		//	return View(quiz);
+		//bool checkSum( int[] arr, int i, int n, int target ) {
+		//	if (target==0)
+		//		return true;
+		//	if (i>=n or target<0)
+		//      return false;
+
+		//	return (checkSum(arr, i+1, n, target) or // don't include current value and move to next
+		//			  arr[i]!=0 and   // include only if non-zero value
+		//			  (checkSum(arr, i, n, target-arr[i]) or // include current value 
+
+		//			  checkSum(arr, i+1, n, target-arr[i]))); // include current value and move to next
 		//}
+		class GFG {
+			// Returns true if there is a subset of set[] with sum
+			// equal to given sum
+			public static bool isSubsetSum( int[] set, int n, int sum ) {
+				// Base Cases
+				if (sum == 0)
+					return true;
+				if (n == 0 && sum != 0)
+					return false;
 
+				// If last element is greater than sum,
+				// then ignore it
+				if (set[n - 1] > sum)
+					return isSubsetSum(set, n - 1, sum);
 
-
-		/*
-		// GET: SumProblems/Edit/5
-		public async Task<IActionResult> Edit( int? id ) {
-			if (id == null) { return Json(NotFound()); }
-			var quiz = await _dbctx.Quiz.FindAsync(id);
-			if (quiz == null) {
-				return NotFound();
-			}
-			return View(quiz);
-		}
-
-
-
-
-		// POST: SumProblems/Edit/5
-		// To protect from overposting attacks, enable the specific properties you want to bind to, for 
-		// more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit( int id, [Bind("Id,Date,Sequence,Target,Solution")] Quiz sumProblem ) {
-			if (id != sumProblem.Id) {
-				return NotFound();
+				/* else, check if sum can be obtained 
+				by any of the following
+				(a) including the last element
+				(b) excluding the last element */
+				return isSubsetSum(set, n - 1, sum)
+						|| isSubsetSum(set, n - 1, sum - set[n - 1]);
 			}
 
-			if (ModelState.IsValid) {
-				try {
-					_dbctx.Update(sumProblem);
-					await _dbctx.SaveChangesAsync();
-				}
-				catch (DbUpdateConcurrencyException) {
-					if (!SumProblemExists(sumProblem.Id)) {
-						return NotFound();
+			public static bool isSubsetSum2( int[] set, int n, int sum ) {
+				// The value of subset[i][j] will be true if there
+				// is a subset of set[0..j-1] with sum equal to i
+				bool[, ] subset = new bool[sum + 1, n + 1];
+
+				// If sum is 0, then answer is true
+				for (int i = 0; i <= n; i++)
+					subset[0, i] = true;
+
+				// If sum is not 0 and set is empty, then answer is false
+				for (int i = 1; i <= sum; i++)
+					subset[i, 0] = false;
+
+				// Fill the subset table in bottom up manner
+				for (int i = 1; i <= sum; i++) {
+					for (int j = 1; j <= n; j++) {
+						subset[i, j] = subset[i, j - 1];
+						if (i >= set[j - 1])
+							subset[i, j] = subset[i, j] || subset[i - set[j - 1], j - 1];
 					}
-					else {
-						throw;
-					}
 				}
-				return RedirectToAction(nameof(Index));
+
+				return subset[sum, n];
 			}
-			return View(sumProblem);
 		}
-
-		// GET: SumProblems/Delete/5
-		public async Task<IActionResult> Delete( int? id ) {
-			if (id == null) {
-				return NotFound();
-			}
-
-			var sumProblem = await _dbctx.Quiz
-					 .FirstOrDefaultAsync(m => m.Id == id);
-			if (sumProblem == null) {
-				return NotFound();
-			}
-
-			return View(sumProblem);
-		}
-
-		// POST: SumProblems/Delete/5
-		[HttpPost, ActionName("Delete")]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> DeleteConfirmed( int id ) {
-			var sumProblem = await _dbctx.Quiz.FindAsync(id);
-			_dbctx.Quiz.Remove(sumProblem);
-			await _dbctx.SaveChangesAsync();
-			return RedirectToAction(nameof(Index));
-		}
-
-		private bool SumProblemExists( int id ) {
-			return _dbctx.Quiz.Any(e => e.Id == id);
-		}
-		*/
 	}
 }
