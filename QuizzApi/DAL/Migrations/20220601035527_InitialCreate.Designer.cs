@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuizApi.DAL;
 
-namespace QuizzApi.DAL.Migrations
+namespace QuizApi.DAL.Migrations
 {
     [DbContext(typeof(MyDbContext))]
     [Migration("20220601035527_InitialCreate")]

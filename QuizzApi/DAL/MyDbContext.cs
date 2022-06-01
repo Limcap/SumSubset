@@ -1,4 +1,4 @@
-﻿using QuizApi.DAL.Models;
+﻿using QuizApi.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -8,7 +8,7 @@ namespace QuizApi.DAL {
 		public MyDbContext( DbContextOptions<MyDbContext> options ) : base(options) {
 		}
 
-		public DbSet<Quiz> Quiz { get; set; }
+		public DbSet<QuizRequest> QuizRequests { get; set; }
 
 		//protected override void OnConfiguring( DbContextOptionsBuilder optionsBuilder ) {
 		//	optionsBuilder.UseSqlite("Filename=AudacesTestApi.db", options => {
@@ -17,9 +17,9 @@ namespace QuizApi.DAL {
 		//	base.OnConfiguring(optionsBuilder);
 		//}
 
-		protected override void OnModelCreating( ModelBuilder builder ) {
-			builder.Entity<Quiz>().HasKey(m => m.Id);
-			base.OnModelCreating(builder);
-		}
+		//protected override void OnModelCreating( ModelBuilder builder ) {
+		//	builder.Entity<QuizRequest>().HasKey(m => m.Id);
+		//	base.OnModelCreating(builder);
+		//}
 	}
 }

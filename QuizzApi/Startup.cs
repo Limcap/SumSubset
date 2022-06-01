@@ -15,11 +15,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using QuizzApi.DAL;
+using QuizApi.DAL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using QuizApi.GraphQL;
 
 namespace QuizApi {
 	public class Startup {
@@ -43,11 +44,11 @@ namespace QuizApi {
 			//services.AddDbContextPool<MyDbContext>(options => options.UseSqlite(ConnectionString));
 			services.AddPooledDbContextFactory<MyDbContext>(opt => opt.UseSqlite(ConnectionString));
 			
-			services.AddSingleton<IQuizDAO, QuizDAO>();
+			services.AddSingleton<QuizRequestDAO>();
 			
 			services.AddControllers();
 			
-			services.AddGraphQLServer().AddQueryType<QuizQuery>();
+			services.AddGraphQLServer().AddQueryType<QuizRequestQuery>();
 			
 			//services.AddMvc();
 

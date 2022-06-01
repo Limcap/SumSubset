@@ -1,24 +1,23 @@
-﻿using QuizApi.DAL;
-using QuizApi.DAL.Models;
-using HotChocolate;
+﻿using HotChocolate;
+using HotChocolate.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using QuizApi.DAL;
+using QuizApi.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using HotChocolate.Data;
-using QuizzApi.DAL;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace QuizApi.Controllers {
-	
+
 	//[Route("rest/[controller]")]
-	[ApiController]
 	[Route("rest")]
-	public class QuizController : Controller {
+	[ApiController]
+	public class QuizRequestController : Controller {
 
 		//public QuizController( IServiceScopeFactory scopeFac, IServiceProvider provider, IDbContextFactory<MyDbContext> dbctxFac ) {
 		//	//_dbctx = context;
@@ -39,7 +38,7 @@ namespace QuizApi.Controllers {
 		//}
 
 
-		public QuizController( IQuizDAO quizDAO ) {
+		public QuizRequestController( QuizRequestDAO quizDAO ) {
 			_quizDAO = quizDAO;
 		}
 
@@ -47,14 +46,14 @@ namespace QuizApi.Controllers {
 
 		//private readonly IDbContextFactory<MyDbContext> _dbctxFac;
 		//private MyDbContext _dbctx => _dbctxFac.CreateDbContext();
-		private readonly IQuizDAO _quizDAO;
+		private readonly QuizRequestDAO _quizDAO;
 
 
 
 
 		[HttpGet] // GET: rest
 		public async Task<IActionResult> Index() {
-			var result = await _quizDAO.GetQuizzesAsync();
+			var result = await _quizDAO.GetAllAsync();
 			return Json(result);
 			//return View(result);
 		}
@@ -72,8 +71,8 @@ namespace QuizApi.Controllers {
 		[HttpGet("quiz/{id}")] // GET: rest/quiz/5
 		[HttpGet("quiz")] // GET: rest/quiz?id=5
 		public async Task<IActionResult> Details( int? id ) {
-			if (id == null) return Json(await _quizDAO.GetQuizzesAsync());
-			var sumProblem = await _quizDAO.GetQuizByIdAsync( id.Value );
+			if (id == null) return Json(await _quizDAO.GetAllAsync());
+			var sumProblem = await _quizDAO.GetByIdAsync( id.Value );
 			if (sumProblem == null) return Json(new { });
 			return Json(sumProblem);
 		}
@@ -101,14 +100,14 @@ namespace QuizApi.Controllers {
 			int[] seq = toint(sequence);
 			var a = GFG.isSubsetSum2(seq, seq.Length, target);
 			if (ModelState.IsValid) {
-				var result = false;
-				//var result = await _quizDAO.CreateQuizAsync(quiz);
-				return Json(result);
+				var quiz = new QuizRequest(){SequenceArray=seq, Target=target, Date=DateTime.Now, SolutionArray=new int[0]};
+				var result = await _quizDAO.CreateAsync(quiz);
+				return Json(new { Sucess = true, Id = result.Id });
 			}
 			return Json(new { Error = "Model is not valid" });
 		}
 
-		private int[] toint(string sequence) {
+		private int[] toint( string sequence ) {
 			return sequence.Split(',').Select(n => int.Parse(n)).ToArray();
 		}
 		//bool checkSum( int[] arr, int i, int n, int target ) {
@@ -145,6 +144,7 @@ namespace QuizApi.Controllers {
 				return isSubsetSum(set, n - 1, sum)
 						|| isSubsetSum(set, n - 1, sum - set[n - 1]);
 			}
+
 
 			public static bool isSubsetSum2( int[] set, int n, int sum ) {
 				// The value of subset[i][j] will be true if there

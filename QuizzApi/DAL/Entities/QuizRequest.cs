@@ -1,13 +1,14 @@
 ﻿using HotChocolate;
+using QuizApi.Util;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace QuizApi.DAL.Models {
-	public class Quiz {
+namespace QuizApi.DAL.Entities {
+	public class QuizRequest {
 		
 		[Key]
 		public int Id { get; set; }
@@ -16,9 +17,11 @@ namespace QuizApi.DAL.Models {
 		[GraphQLDescription("Data da requisição")]
 		public DateTime Date { get; set; }
 
-		[Required][GraphQLIgnore][JsonIgnore]
+		[Required]
+		[GraphQLIgnore]
+		[JsonIgnore]
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public string Sequence { get; set; }
+		public string Sequence { get; set; } = String.Empty;
 
 		[Required]
 		[GraphQLDescription("Número-alvo para o qual a soma deve ser encontrada")]
@@ -26,21 +29,17 @@ namespace QuizApi.DAL.Models {
 
 		[Required][GraphQLIgnore][JsonIgnore]
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public string Solution { get; set; }
+		public string Solution { get; set; } = String.Empty;
 
 		[NotMapped]
+		[GraphQLName("sequence")]
 		[GraphQLDescription("Sequencia inicial a partir da qual deve-se encontrar a solução")]
-		public int[] SequenceArray {
-			get => Sequence.Trim('[').TrimEnd(']').Split(',').Select(str=>int.Parse(str)).ToArray();
-			set => Sequence = '[' + string.Join(',',value) + ']';
-		}
+		public int[] SequenceArray { get => Sequence.AsIntArray(); set => Sequence = value.AsString(); }
 
 		[NotMapped]
+		[GraphQLName("solution")]
 		[GraphQLDescription("Conjunto solução cuja soma é igual ao número-alvo")]
-		public int[] SolutionArray {
-			get => Solution.Trim('[').TrimEnd(']').Split(',').Select(str => int.Parse(str)).ToArray();
-			set => Solution = '[' + string.Join(',', value) + ']';
-		}
+		public int[] SolutionArray { get => Solution.AsIntArray(); set => Solution = value.AsString(); }
 
 	}
 }
