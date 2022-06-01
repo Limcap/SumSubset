@@ -1,33 +1,33 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace AudacesTestApi.Migrations.SqliteMigrations
+namespace QuizzApi.DAL.Migrations
 {
     public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "SumProblems",
+                name: "Quiz",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Date = table.Column<DateTime>(nullable: false),
-                    Sequence = table.Column<string>(nullable: false),
-                    Target = table.Column<int>(nullable: false),
-                    Solution = table.Column<string>(nullable: false)
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Sequence = table.Column<string>(type: "TEXT", nullable: false),
+                    Target = table.Column<int>(type: "INTEGER", nullable: false),
+                    Solution = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SumProblems", x => x.Id);
+                    table.PrimaryKey("PK_Quiz", x => x.Id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "SumProblems");
+                name: "Quiz");
         }
     }
 }

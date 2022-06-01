@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudacesTestApi", "AudacesTestApi\AudacesTestApi.csproj", "{A4D7C66B-794B-4501-816D-B33DFF803C9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudacesTest", "QuizzApi\QuizzApi.csproj", "{A4D7C66B-794B-4501-816D-B33DFF803C9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,8 +1,8 @@
-﻿using AudacesTestApi.Models;
+﻿using QuizApi.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
-namespace AudacesTestApi.DataComm {
+namespace QuizApi.DAL {
 	public class MyDbContext : DbContext {
 
 		public MyDbContext( DbContextOptions<MyDbContext> options ) : base(options) {

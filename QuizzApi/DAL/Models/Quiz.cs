@@ -5,20 +5,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace AudacesTestApi.Models {
+namespace QuizApi.DAL.Models {
 	public class Quiz {
 		
 		[Key]
 		public int Id { get; set; }
 		
 		[Required]
+		[Description("Data da requisição")]
 		public DateTime Date { get; set; }
 
 		[Required]
+		[Description("Sequencia enviada")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public string Sequence { get; set; }
 
 		[Required]
+		[Description("Target procurado")]
 		public int Target { get; set; }
 
 		[Required]

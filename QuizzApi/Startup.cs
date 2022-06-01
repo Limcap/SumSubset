@@ -1,5 +1,4 @@
-using AudacesTestApi.DataComm;
-using AudacesTestApi.GraphQL;
+using QuizApi.DAL;
 //using GraphQL;
 //using GraphQL.MicrosoftDI;
 //using GraphQL.Server;
@@ -16,12 +15,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using QuizzApi.DAL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AudacesTestApi {
+namespace QuizApi {
 	public class Startup {
 
 		public Startup( IConfiguration configuration ) {
@@ -39,8 +39,16 @@ namespace AudacesTestApi {
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices( IServiceCollection services ) {
+			//services.AddDbContext<MyDbContext>(options => options.UseSqlite(ConnectionString));
+			//services.AddDbContextPool<MyDbContext>(options => options.UseSqlite(ConnectionString));
+			services.AddPooledDbContextFactory<MyDbContext>(opt => opt.UseSqlite(ConnectionString));
+			
 			services.AddControllers();
-			services.AddDbContext<MyDbContext>(options => options.UseSqlite(ConnectionString));
+			
+			//services.AddSingleton<MyDbContext>();
+			
+			services.AddGraphQLServer().AddQueryType<QuizQuery>();
+			
 			//services.AddMvc();
 
 
@@ -50,7 +58,6 @@ namespace AudacesTestApi {
 			//services.AddScoped<GraphQL.QuizSchema>();
 			//services.AddScoped<GraphQL.Query>();
 
-			services.AddGraphQLServer().AddQueryType<Query>();
 			/*
 			services.AddGraphQL(opt => {
 				// Load GraphQL Server configurations
@@ -76,11 +83,11 @@ namespace AudacesTestApi {
 			if (env.IsDevelopment()) { app.UseDeveloperExceptionPage(); }
 			app.UseRouting();
 			app.UseAuthorization();
-			app.Use(OutputRequestedEndpointToConsole);
+			//app.Use(OutputRequestedEndpointToConsole);
 			app.UseEndpoints(endpoints => {
 				endpoints.MapControllers();
-				endpoints.MapGraphQL();
-				endpoints.MapGet("/", async context => {
+				endpoints.MapGraphQL("/gql");
+				endpoints.MapGet("/help", async context => {
 					await context.Response.WriteAsync("Hello World!");
 					var db = context.RequestServices.GetService(typeof(MyDbContext)) as MyDbContext;
 
@@ -108,5 +115,8 @@ namespace AudacesTestApi {
 			next(context);
 			return Task.CompletedTask;
 		};
+	}
+	public class Query1 {
+		public string Hello() { return "How are you?"; }
 	}
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace AudacesTestApi {
+namespace QuizApi {
 	public class WeatherForecast {
 		public DateTime Date { get; set; }
 

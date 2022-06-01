@@ -24,5 +24,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="GraphQL\" />
+    <Folder Include="DAL\Migrations\" />
+  </ItemGroup>
+
 
 </Project>

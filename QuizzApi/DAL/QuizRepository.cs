@@ -1,10 +1,11 @@
-﻿using AudacesTestApi.DataComm;
+﻿using QuizApi.DAL;
+using QuizApi.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AudacesTestApi.Models {
+namespace QuizzApi.DAL {
 	public class QuizRepository {
 
 		public QuizRepository( MyDbContext dbCtx ) {
@@ -35,7 +36,6 @@ namespace AudacesTestApi.Models {
 			await dbCtx.Quiz.AddAsync(quiz);
 			await dbCtx.SaveChangesAsync();
 			return quiz;
-
 		}
 	}
 }
