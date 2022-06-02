@@ -7,7 +7,7 @@ namespace QuizApi.GraphQL {
 	/// </summary>
 	public class QuizResponse {
 
-		public QuizResponse( int[] array ) { Solution = array; }
+		public QuizResponse( int[] array ) { Solution = array; if (array.Length>0) HasSolution = true; }
 
 
 		//[GraphQLName("HasSolution")]

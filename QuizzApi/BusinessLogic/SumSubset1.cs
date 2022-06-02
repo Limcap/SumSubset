@@ -9,9 +9,9 @@ namespace QuizApi.BusinessLogic {
 	/// <remarks>
 	/// Funciona, porém só encontra soluções em alguns casos. 
 	/// </remarks>
-	public class SumSubset {
+	public class SumSubset1 {
 
-		public SumSubset( int[] source, int target )
+		public SumSubset1( int[] source, int target )
 		{ this.source=source; next=0; this.target=target; set=new List<int>(source.Length); mustUnravel=false; } //int pos=0, int nxt=0 //this.nxt=nxt==0?pos+1:nxt;
 		int[] source; List<int> set; int next; int target; bool mustUnravel;
 
@@ -19,8 +19,8 @@ namespace QuizApi.BusinessLogic {
 
 		public static int[] FindSubsetForTargetSum( int[] sourceSequence, int targetSum ) {
 			Array.Sort(sourceSequence);
-			var subsets = new Queue<SumSubset>();
-			subsets.Enqueue(new SumSubset(sourceSequence, targetSum));
+			var subsets = new Queue<SumSubset1>();
+			subsets.Enqueue(new SumSubset1(sourceSequence, targetSum));
 			do {
 				subsets.TryDequeue(out var subset);
 				while (subset.HasNext) {
@@ -36,12 +36,12 @@ namespace QuizApi.BusinessLogic {
 
 
 
-		SumSubset SetNext( int next ) { this.next = next; return this; }
-		SumSubset Advance() { if (next>=source.Length) return this; set.Add(source[next]); next++; return this; }
-		SumSubset Add( IEnumerable<int> vals ) { set.AddRange(vals); return this; }
-		SumSubset RemoveAt( int pos ) { set.RemoveAt(pos); return this; }
-		SumSubset Clone() => new SumSubset(source, target).Add(set).SetNext(next);
-		void UnravelInto( Queue<SumSubset> list ) {
+		SumSubset1 SetNext( int next ) { this.next = next; return this; }
+		SumSubset1 Advance() { if (next>=source.Length) return this; set.Add(source[next]); next++; return this; }
+		SumSubset1 Add( IEnumerable<int> vals ) { set.AddRange(vals); return this; }
+		SumSubset1 RemoveAt( int pos ) { set.RemoveAt(pos); return this; }
+		SumSubset1 Clone() => new SumSubset1(source, target).Add(set).SetNext(next);
+		void UnravelInto( Queue<SumSubset1> list ) {
 			for (int i = set.Count-1; i>=0; i--)
 			{ var newSub = Clone().Advance().RemoveAt(i); if(newSub.HasNext) list.Enqueue(newSub); if (newSub.IsMatch) break; }
 		}

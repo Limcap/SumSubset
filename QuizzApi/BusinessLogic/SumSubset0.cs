@@ -5,7 +5,7 @@ namespace QuizApi.BusinessLogic {
 
 
 
-	class SubsetLogic_Tentativa1 {
+	class SumSubset0 {
 		// Returns true if there is a subset of set[] with sum
 		// equal to given sum
 		public static bool isSubsetSum( int[] set, int n, int sum ) {

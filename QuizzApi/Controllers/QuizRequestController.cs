@@ -46,8 +46,8 @@ namespace QuizApi.Controllers {
 
 
 
-		[HttpGet("previousRequest/{id}")] // GET: rest/quiz/5
-		[HttpGet("previousRequests")] // GET: rest/quiz?id=5
+		[HttpGet("previousRequest/id/{id}")] // GET: rest/quiz/5
+		//[HttpGet("previousRequests")] // GET: rest/quiz?id=5
 		public async Task<IActionResult> PreviousRequest( int? id ) {
 			if (id == null) return Json(await _quizDAO.GetAllAsync());
 			var sumProblem = await _quizDAO.GetByIdAsync( id.Value );
@@ -67,17 +67,14 @@ namespace QuizApi.Controllers {
 
 
 
-		[HttpGet("solveQuiz/{sequence}")] // GET: rest/quiz?id=5
+		[HttpGet("solveQuiz/{sequence}/{target}")] // GET: rest/quiz?id=5
 		[HttpGet("solveQuiz")] // GET: rest/quiz?id=5
 		public async Task<IActionResult> SolveQuizz( string sequence, int target ) {
 			var arr = sequence.TryAsIntArray();
 			RestResponse response;
-			//string ToUTF8( string txt ) => Encoding.UTF8.GetString(Encoding.Default.GetBytes(txt));
 			if (arr == null) response = new RestResponse($"A sequencia de numeros informada e invalida: [{sequence}]", null);
 			else response = new RestResponse(null, "Nao implementado");
-			//var result = Json(response,new JsonSerializerOptions(){WriteIndented=true,Encoder=JavaScriptEncoder.Create(UnicodeRanges.LatinExtendedAdditional)});
-			//result.ContentType = "application/json;charset=unicode";
-			var solution = await Task.Run(()=>SumSubset.FindSubsetForTargetSum(arr, target) ?? new int[0]);
+			var solution = await Task.Run(()=>SumSubset1.FindSubsetForTargetSum(arr, target) ?? SumSubset2.FindSubSetForTargetSum(arr,target) ?? new int[0]);
 			var quiz = new QuizRequest() { Date = DateTime.Now, SequenceArray=arr, Target=target, SolutionArray=solution };
 			var r = _quizDAO.CreateAsync( quiz );
 			return Json(response);

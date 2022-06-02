@@ -2,6 +2,7 @@
 using HotChocolate.Data;
 using HotChocolate.Types;
 using Microsoft.EntityFrameworkCore;
+using QuizApi.BusinessLogic;
 using QuizApi.DAL;
 using QuizApi.Models;
 using System;
@@ -48,8 +49,8 @@ namespace QuizApi.GraphQL {
 
 
 		[GraphQLDescription("Obtem as requisições já realizadas, dentro de um período de tempo especificado")]
-		public async Task<List<QuizRequest>> GetPreviousRequests( DateTime? startDate = null, DateTime? endDate = null ) {
-			var result = await _quizDAO.GetByDateAsync(startDate, endDate);
+		public async Task<List<QuizRequest>> GetPreviousRequests( DateTime? initialDate = null, DateTime? finalDate = null ) {
+			var result = await _quizDAO.GetByDateAsync(initialDate, finalDate);
 			return result;
 		}
 
@@ -57,7 +58,9 @@ namespace QuizApi.GraphQL {
 
 		[GraphQLDescription("Obtém a solução para um quiz cuja sequência e alvo são informados")]
 		public async Task<QuizResponse> SolveQuiz( int[] sequence, int target ) {
-			var result = await _quizDAO.CreateAsync(new QuizRequest() { Date=DateTime.Now, SequenceArray=sequence, Target=target });
+			var solution = await Task.Run(()=>SumSubset1.FindSubsetForTargetSum(sequence, target) ?? SumSubset2.FindSubSetForTargetSum(sequence,target) ?? new int[0]);
+			var quiz = new QuizRequest() { Date = DateTime.Now, SequenceArray=sequence, Target=target, SolutionArray=solution };
+			var result = await _quizDAO.CreateAsync(quiz);
 			return new QuizResponse(result.SolutionArray);
 		}
 	}

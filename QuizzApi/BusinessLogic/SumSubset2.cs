@@ -22,9 +22,9 @@ namespace QuizApi.BusinessLogic {
 			add:
 			sum = stack.sum;
 			int n;
-			for (n=start; n<max; n++) {
+			for (n=start; n<=max; n++) {
 				int val = source[n];
-				if (val + sum > target) {
+				if (val + sum > target || n == max) {
 					if (n > start) {
 						stack.Push(new Pos(n-1));
 						max = n;
@@ -33,7 +33,7 @@ namespace QuizApi.BusinessLogic {
 			}
 			if (stack.sum == target) goto completed;
 			else if (stack.sum < target) goto add;
-
+			return null;
 			completed:
 			return stack.Select(p => p.val).ToArray();
 		}
