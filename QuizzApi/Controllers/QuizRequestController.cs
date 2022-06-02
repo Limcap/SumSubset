@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using QuizApi.BusinessLogic;
 using QuizApi.DAL;
 using QuizApi.DAL.Entities;
 using QuizApi.Util;
@@ -110,7 +111,8 @@ namespace QuizApi.Controllers {
 			else response = new RestResponse(null, "Nao implementado");
 			//var result = Json(response,new JsonSerializerOptions(){WriteIndented=true,Encoder=JavaScriptEncoder.Create(UnicodeRanges.LatinExtendedAdditional)});
 			//result.ContentType = "application/json;charset=unicode";
-			var quiz = new QuizRequest() { Date = DateTime.Now, SequenceArray=arr, Target=target, SolutionArray=Subset.GetSubsetOfSum(arr, target) };
+			var solution = await Task.Run(()=>SumSubset.FindSubsetForTargetSum(arr, target) ?? new int[0]);
+			var quiz = new QuizRequest() { Date = DateTime.Now, SequenceArray=arr, Target=target, SolutionArray=solution };
 			var r = _quizDAO.CreateAsync( quiz );
 			return Json(response);
 		}
