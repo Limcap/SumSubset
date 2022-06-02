@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuizApi.DAL;
 
-namespace QuizApi.DAL.Migrations
+namespace QuizzApi.DAL.Migrations
 {
     [DbContext(typeof(MyDbContext))]
     partial class MyDbContextModelSnapshot : ModelSnapshot
@@ -16,7 +16,7 @@ namespace QuizApi.DAL.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.17");
 
-            modelBuilder.Entity("QuizApi.Models.Quiz", b =>
+            modelBuilder.Entity("QuizApi.DAL.Entities.QuizRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -38,7 +38,7 @@ namespace QuizApi.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Quiz");
+                    b.ToTable("QuizRequests");
                 });
 #pragma warning restore 612, 618
         }

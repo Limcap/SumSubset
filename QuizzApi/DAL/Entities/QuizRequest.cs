@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace QuizApi.DAL.Entities {
+namespace QuizApi.Models{
 
 	/// <summary>
 	/// Representa o modelo de dados para a entidade <see cref="QuizRequest"/> do banco de dados.

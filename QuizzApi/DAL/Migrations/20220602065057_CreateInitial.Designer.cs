@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuizApi.DAL;
 
-namespace QuizApi.DAL.Migrations
+namespace QuizzApi.DAL.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20220601035527_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220602065057_CreateInitial")]
+    partial class CreateInitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -18,7 +18,7 @@ namespace QuizApi.DAL.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.17");
 
-            modelBuilder.Entity("QuizApi.Models.Quiz", b =>
+            modelBuilder.Entity("QuizApi.DAL.Entities.QuizRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -40,7 +40,7 @@ namespace QuizApi.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Quiz");
+                    b.ToTable("QuizRequests");
                 });
 #pragma warning restore 612, 618
         }

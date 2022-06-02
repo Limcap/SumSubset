@@ -1,4 +1,3 @@
-using QuizApi.DAL;
 //using GraphQL;
 //using GraphQL.MicrosoftDI;
 //using GraphQL.Server;
@@ -16,12 +15,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using QuizApi.DAL;
+using QuizApi.GraphQL;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using QuizApi.GraphQL;
-using System.IO;
 
 namespace QuizApi {
 	public class Startup {
@@ -56,40 +55,10 @@ namespace QuizApi {
 		/// </remarks>
 		/// <param name="services"></param>
 		public void ConfigureServices( IServiceCollection services ) {
-			//services.AddDbContext<MyDbContext>(options => options.UseSqlite(ConnectionString));
-			//services.AddDbContextPool<MyDbContext>(options => options.UseSqlite(ConnectionString));
 			services.AddPooledDbContextFactory<MyDbContext>(opt => opt.UseSqlite(ConnectionString));
-			
 			services.AddSingleton<QuizRequestDAO>();
-			
 			services.AddControllers();
-			
 			services.AddGraphQLServer().AddQueryType<QuizRequestQuery>();
-			
-			//services.AddMvc();
-
-
-			//services.AddScoped<IServiceProvider>(x => new FuncDependencyResolver(x.GetRequiredService));
-			//services.AddSingleton(s => new (( type ) => (IGraphType)s.GetRequiredService(type)));
-
-			//services.AddScoped<GraphQL.QuizSchema>();
-			//services.AddScoped<GraphQL.Query>();
-
-			/*
-			services.AddGraphQL(opt => {
-				// Load GraphQL Server configurations
-				var graphQLOptions = Configuration .GetSection("GraphQL").Get<GraphQLOptions>();
-				opt.ComplexityConfiguration = graphQLOptions.ComplexityConfiguration;
-				opt.EnableMetrics = graphQLOptions.EnableMetrics;
-				//opt.ExposeExceptions = true;
-				// Log errors
-				//var logger = provider.GetRequiredService<ILogger<Startup>>();
-				//options.UnhandledExceptionDelegate = ctx =>
-				//	 logger.LogError("{Error} occurred", ctx.OriginalException.Message);
-			});
-			services.AddGraphTypes(ServiceLifetime.Scoped);
-			services.AddDataLoader();
-			*/
 		}
 
 
@@ -106,9 +75,7 @@ namespace QuizApi {
 				endpoints.MapGraphQL("/graphql");
 				endpoints.MapGet("/help", HelpInfo);
 				endpoints.MapGet("/", HelpInfo);
-				//endpoints.MapGet("/", HelpInfo);
 			});
-			//app.UseGraphQLAltair("/altair");
 		}
 
 
@@ -120,10 +87,10 @@ namespace QuizApi {
 		/// </summary>
 		private Func<RequestDelegate,RequestDelegate> OutputRequestedEndpointToConsole = next => context => {
 			var endpoint = context.GetEndpoint();
-			if (endpoint is null) return Task.CompletedTask;
+			//if (endpoint is null) return Task.CompletedTask;
 			Console.WriteLine($"{context.Request.Method} {context.Request.Path}{context.Request.QueryString}");
 			if (endpoint is RouteEndpoint routeEndpoint) Console.WriteLine($"  Rota: {routeEndpoint.RoutePattern.RawText}");
-			Console.WriteLine($"  Endpoint:  {endpoint.DisplayName}");
+			Console.WriteLine($"  Endpoint:  {endpoint?.DisplayName}");
 			//foreach (var metadata in endpoint.Metadata) Console.WriteLine($"   Metadata: {metadata}");
 			return next(context);
 		};

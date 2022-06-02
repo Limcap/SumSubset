@@ -3,7 +3,7 @@ using HotChocolate.Data;
 using HotChocolate.Types;
 using Microsoft.EntityFrameworkCore;
 using QuizApi.DAL;
-using QuizApi.DAL.Entities;
+using QuizApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

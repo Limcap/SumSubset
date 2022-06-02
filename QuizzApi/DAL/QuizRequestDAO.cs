@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using QuizApi.DAL.Entities;
+using QuizApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +20,6 @@ namespace QuizApi.DAL {
 	/// </remarks>
 	public class QuizRequestDAO {
 
-		//public QuizRepository( MyDbContext dbCtx ) {
-		//	this.dbCtx = dbCtx;
-		//	dbCtx.Database.EnsureCreated();
-		//}
 
 		public QuizRequestDAO( IDbContextFactory<MyDbContext> dbCtxFac ) {
 			_dbCtxFac = dbCtxFac;
@@ -33,29 +29,17 @@ namespace QuizApi.DAL {
 
 		private MyDbContext CreateDbContext() => _dbCtxFac.CreateDbContext();
 		private readonly IDbContextFactory<MyDbContext> _dbCtxFac;
-		//private MyDbContext _dbCtx;
-		//private MyDbContext dbCtx => _dbCtx ?? (_dbCtx = _dbCtxFac.CreateDbContext());
 
 
 		public List<QuizRequest> GetAll() {
 			using var dbCtx = CreateDbContext();
 			return dbCtx.QuizRequests.ToList();
-			//.Include(x => x.Id)
-			//.Include(x => x.Sequence)
-			//.Include(x => x.Target)
-			//.Include(x => x.Solution)
-			//.ToListAsync();
 		}
 
 
 		public Task<List<QuizRequest>> GetAllAsync() {
 			using var dbCtx = CreateDbContext();
 			return dbCtx.QuizRequests.ToListAsync();
-			//.Include(x => x.Id)
-			//.Include(x => x.Sequence)
-			//.Include(x => x.Target)
-			//.Include(x => x.Solution)
-			//.ToListAsync();
 		}
 
 

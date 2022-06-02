@@ -1,14 +1,14 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace QuizApi.DAL.Migrations
+namespace QuizzApi.DAL.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class CreateInitial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Quiz",
+                name: "QuizRequests",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -20,14 +20,14 @@ namespace QuizApi.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Quiz", x => x.Id);
+                    table.PrimaryKey("PK_QuizRequests", x => x.Id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Quiz");
+                name: "QuizRequests");
         }
     }
 }
